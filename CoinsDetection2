@@ -1,0 +1,151 @@
+// OpenCVcontrib.cpp : Defines the entry point for the console application.
+//
+#include <vector>
+#include "stdafx.h"
+
+#include <iomanip>
+#include "opencv2\features2d.hpp"
+#include "opencv2\highgui.hpp"
+#include "opencv2\imgproc.hpp"
+#include "opencv2\xfeatures2d.hpp"
+#include <iostream>
+//#include "opencv2\xfeatures2d.hpp"
+//#include "opencv2\xfeatures2d\nonfree.hpp"
+//#include <Windows.h>
+
+
+
+using namespace std;
+using namespace cv;
+//using namespace xfeatures2d;
+
+string naz[3][3] = { { "5zl","2zl","1zl" },{ "50gr","20gr","10gr" },{ "5gr","2gr","1gr" } };
+void pokaz(const Mat &x ) {
+	for (int i = 0; i < x.rows; i++) {
+		for (int j = 0; j < x.cols&&i<5; j++) {
+			cout << fixed << setprecision(3) << x.at<float>(Point(j,i)) << ",  ";
+		}
+		cout << endl;
+	}
+}
+void wysw(Mat &obr, vector<vector<Point>> klu) {
+	for (int i = 0; i < klu.size(); i++) {
+		for (int j = 0; j < klu[i].size(); j++) {
+			obr.at<Vec3b>(klu[i][j]) = Vec3b(i*24234%256, i*10123%256, i*23490%256);
+		}
+	}
+}
+void wysw(Mat &obr, vector <KeyPoint> klu) {
+	for (int i = 0; i < klu.size(); i++) {
+		circle(obr, klu[i].pt, 4, Scalar(100, 120, 0), 1);
+	}
+}
+void mySIFT(Mat &inPut,vector <KeyPoint> keys, const Mat &inPut2, vector <KeyPoint> keys2, double thres, Mat &outPut) {
+	Mat descriptors, descriptors2;
+	double minD=1000, maxD=0;
+	Ptr<Feature2D> desc = xfeatures2d::SIFT::create();
+	desc->compute(inPut, keys, descriptors);
+	desc->compute(inPut2, keys2, descriptors2);
+	BFMatcher matcher;
+	vector <DMatch> distances , bestDist;
+	matcher.match(descriptors, descriptors2, distances);
+	for (int i = 0; i < distances.size(); i++) {
+		if (distances[i].distance > maxD)maxD = distances[i].distance;
+		if (distances[i].distance < minD)minD = distances[i].distance;
+	}
+	for (int i = 0; i < distances.size(); i++) {
+		if (distances[i].distance < thres* minD) bestDist.push_back(distances[i]);
+	}
+	drawMatches(inPut, keys, inPut2, keys2, bestDist, outPut);
+
+
+}
+void myMoment(const Mat &inPut1, vector <vector<Point>> blobs1, const Mat &inPut2, vector <vector< Point>> blobs2, double thres, Mat &outPut) {
+	vector <Moments> mom1, mom2;
+	vector <KeyPoint> keys1, keys2;
+	Mat desc1(0,7, CV_64FC1), desc2(0, 7, CV_64FC1);
+	Mat huMom1, huMom2;
+	double minD=1000, maxD=0;
+	for (int i = 0; i < blobs1.size(); i++) {
+		mom1.push_back(moments(blobs1[i]));
+		RotatedRect rect = fitEllipse(blobs1[i]);
+		keys1.push_back(KeyPoint(rect.center,10));
+	}
+	for (int i = 0; i < blobs2.size(); i++) {
+		mom2.push_back(moments(blobs2[i]));
+		RotatedRect rect = fitEllipse(blobs2[i]);
+		keys2.push_back(KeyPoint(rect.center, 10));
+	}
+	for (int i = 0; i < mom1.size(); i++) {
+		HuMoments(mom1[i], huMom1);
+		transpose(huMom1, huMom1);
+		vconcat(desc1, huMom1, desc1);
+	}
+	for (int i = 0; i < mom2.size(); i++) {
+		HuMoments(mom2[i], huMom2);
+		transpose(huMom2,huMom2);
+		vconcat(desc2, huMom2, desc2);
+	}
+	desc1.convertTo(desc1, CV_32FC1);
+	desc2.convertTo(desc2, CV_32FC1);
+
+	
+	BFMatcher matcher;
+	
+	vector <DMatch> distances, bestDistances;
+	matcher.match(desc1, desc2,distances);
+	for (int i = 0; i < distances.size(); i++)cout << distances[i].distance << endl;
+	
+	for (int i = 0; i < distances.size(); i++) {
+		if (distances[i].distance > maxD)maxD = distances[i].distance;
+		if (distances[i].distance < minD)minD = distances[i].distance;
+	}
+	for (int i = 0; i < distances.size(); i++) {
+		if (distances[i].distance < thres)bestDistances.push_back(distances[i]);
+	}
+	
+	drawMatches(inPut1, keys1, inPut2, keys2, bestDistances, outPut);
+	
+}
+
+int main()
+{
+	namedWindow("obraz", WINDOW_NORMAL);
+	namedWindow("obraz2", WINDOW_NORMAL);
+	namedWindow("obraz3", WINDOW_NORMAL);
+	namedWindow("obraz4", WINDOW_NORMAL);
+	vector < vector<Point> > klucz;
+	vector < vector<Point> > klucz2;
+	vector < KeyPoint> keys , keys2;
+	vector <Rect> prost;
+	vector <Rect> prost2;
+	Mat obr,grayObr,gray2,obr2,obrI,obrI2,obrCop;
+	Mat desc1, desc2;
+	Mat obrDopSIFT , obrDopHU;
+	obr=imread("C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/1gr/M1gr41.tif");
+	obr2= imread("C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/1gr/M1gr40.tif");
+	if (obr.empty() == true|| obr2.empty() == true) return -1;
+	obr.copyTo(obrCop);
+	cvtColor(obr, grayObr, CV_BGR2GRAY);
+	cvtColor(obr2, gray2, CV_BGR2GRAY);
+	obrI = 255-grayObr;
+	obrI2 = 255 - gray2;
+	Ptr<MSER> wsk=MSER::create(4,10,800,0.25);
+	wsk->detect(obrI, keys);
+	wsk->detect(obrI2, keys2);
+	wsk->detectRegions(obrI, klucz, prost);
+	wsk->detectRegions(obrI2, klucz2, prost2);
+
+	for (int i = 0; i < keys.size(); i++) cout << keys[i].size <<"    "<<keys[i].angle << endl;
+	mySIFT(obr, keys, obr2, keys2, 2, obrDopSIFT);
+	wysw(obr, klucz);
+	wysw(obr2, klucz2);
+	myMoment(obr, klucz, obr2, klucz2, 0.002, obrDopHU);
+	imshow("obraz", obr);
+	imshow("obraz2", obr2);
+	imshow("obraz3", obrDopSIFT);
+	imshow("obraz4", obrDopHU);
+	waitKey(0);
+    return 0;
+}
+
