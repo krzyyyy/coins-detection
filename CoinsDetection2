@@ -9,6 +9,7 @@
 #include "opencv2\imgproc.hpp"
 #include "opencv2\xfeatures2d.hpp"
 #include <iostream>
+#include <math.h>
 //#include "opencv2\xfeatures2d.hpp"
 //#include "opencv2\xfeatures2d\nonfree.hpp"
 #include <Windows.h>
@@ -20,6 +21,17 @@ using namespace cv;
 //using namespace xfeatures2d;
 
 string naz[3][3] = { { "5zl","2zl","1zl" },{ "50gr","20gr","10gr" },{ "5gr","2gr","1gr" } };
+double compfactor(vector <DMatch> in, vector <KeyPoint> keys) {
+	if (2*keys.size() < in.size())return 0;
+	double mean = 0, min = 10000 , factor=0;
+	for each (DMatch i in in) {
+		mean += i.distance;
+		if (i.distance < min)min = i.distance;
+	}
+	mean/= in.size();
+	return (in.size() / keys.size()) + (min / mean);
+
+}
 void retRotRect(const RotatedRect rect, Mat  inPut, Mat & outPut) {
 	Mat rotMatrix = getRotationMatrix2D(rect.center, rect.angle,1);
 	Mat rotatedInPut;
@@ -51,11 +63,11 @@ void wysw(Mat &obr, vector <KeyPoint> klu) {
 void mySIFT(Mat &inPut,vector <KeyPoint> keys, const Mat &inPut2, vector <KeyPoint> keys2, double thres, vector <DMatch> &bestDist) {
 	Mat descriptors, descriptors2;
 	Mat inPutG, inPutG2;
-	double minD=1000, maxD=0;
+	double minD=100000, maxD=0;
 	Ptr<Feature2D> desc = xfeatures2d::SIFT::create();
 	desc->compute(inPut, keys, descriptors);
 	desc->compute(inPut2, keys2, descriptors2);
-	BFMatcher matcher;
+	BFMatcher matcher(NORM_L1);
 	vector <DMatch> distances ;
 	matcher.match(descriptors, descriptors2, distances);
 	for (int i = 0; i < distances.size(); i++) {
@@ -194,17 +206,17 @@ int main()
 	vector <Rect> prost;
 	vector <Rect> prost2;
 	Mat obr, obrG, obr2, obr2G;
-	Ptr<MSER> wsk=MSER::create(4,40,800,0.25);
-	pathObj = "C:/Users/ASUS/Desktop/BAZA_ZDJEC/POMNIEJSZONE2/1gr/";
-	pathPat = "C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/1gr/";
+	Ptr<MSER> wsk=MSER::create(4,30,800,0.25);
+	pathObj = "C:/Users/ASUS/Desktop/BAZA_ZDJEC/POMNIEJSZONE2/50gr/";
+	pathPat = "C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/50gr/";
 	_finddata_t pattern, object;
-	objHand = _findfirst("C:/Users/ASUS/Desktop/BAZA_ZDJEC/POMNIEJSZONE2/1gr/*.tif", &object);
+	objHand = _findfirst("C:/Users/ASUS/Desktop/BAZA_ZDJEC/POMNIEJSZONE2/50gr/*.tif", &object);
 	if ( objHand == -1) return -1;
 	
 	do {
 		vector <KeyPoint> keys;
 		int licz = 0;
-		patHand = _findfirst("C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/1gr/*.tif", &pattern);
+		patHand = _findfirst("C:/Users/ASUS/Desktop/BAZA_ZDJEC/NOWE_MONETY/50gr/*.tif", &pattern);
 		if (patHand == -1)return -1;
 		obr = imread(pathObj + object.name);
 		cvtColor(obr, obrG, CV_BGR2GRAY);
@@ -215,16 +227,14 @@ int main()
 			obr2 = imread(pathPat + pattern.name);
 			cvtColor(obr2, obr2G, CV_BGR2GRAY);
 			wsk->detect(obr2G, keys2);
-			mySIFT(obrG, keys, obr2G, keys2, 2, dist);
-			if (dist.size() > bestDist.size()||licz==0) {
+			mySIFT(obr, keys, obr2, keys2, 2, dist);
+			
+			if (compfactor(dist,keys2) > compfactor(bestDist,bestKey)||licz==0) {
 				bestDist = dist;
 				obr2.copyTo(bestIm);
 				bestKey = keys2;
 				licz++;
 			}
-			drawMatches(obr, keys, obr2, keys2, dist, test);
-			imshow("obraz2", test);
-			waitKey(1000);
 		} while (_findnext(patHand,&pattern)!=-1);
 		drawMatches(obr, keys, bestIm, bestKey, bestDist, matchedIm);
 		imshow("obraz", matchedIm);
