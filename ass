@@ -1,0 +1,44 @@
+#include "stdafx.h"
+#include "ImageBase.h"
+//#include <Windows.h>
+#include <io.h>
+using namespace std;
+
+
+ImageBase::ImageBase(const string path, const string fileExt) {
+	string fullname = path + fileExt;
+	_finddata_t objects;
+	long objHand;
+	objHand = _findfirst(fullname.c_str(), &objects);
+	if (objHand == -1) empty=true;
+	else {
+		empty = false;
+		do {
+			
+			 images.push_back(imread(path + objects.name,0));
+		} while (_findnext(objHand, &objects) != -1);
+		_findclose(objHand);
+
+	}
+}
+void ImageBase::computDesc(Ptr<Feature2D> detector , Ptr<Feature2D> descriptor) {
+	detector->detect(images, keys);
+	descriptor->compute(images, keys, desc);
+}
+void ImageBase::matchBases(ImageBase &comparedBase, Ptr<DescriptorMatcher> matcher, bool show = false) {
+	for (int i = 0; i < desc.size(); i++) {
+		for (int j = 0; j < comparedBase.desc.size(); j++) {
+			matcher->match(desc[i], comparedBase.desc[j], distances[i][j]);
+		}
+	}
+}
+void ImageBase::matchSelfBase(Ptr<DescriptorMatcher> matcher, bool show = false) {
+	for (int i = 0; i < desc.size(); i++) {
+		for (int j = i; j < desc.size(); j++) {
+			matcher->match(desc[i], desc[j], distances[i][j]);
+		}
+	}
+}
+void normMatchMatrix() {
+
+}
