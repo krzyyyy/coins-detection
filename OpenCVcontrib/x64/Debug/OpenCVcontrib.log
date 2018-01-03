@@ -1,0 +1,3 @@
+﻿  ConfMat.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.cpp(67): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  OpenCVcontrib.vcxproj -> C:\Users\ASUS\Desktop\Programy C++\OpenCVcontrib\x64\Debug\OpenCVcontrib.exe
