@@ -1,3 +1,14 @@
-﻿  ConfMat.cpp
-c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.cpp(67): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
-  OpenCVcontrib.vcxproj -> C:\Users\ASUS\Desktop\Programy C++\OpenCVcontrib\x64\Debug\OpenCVcontrib.exe
+﻿  Source.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\imagebase.h(6): error C2011: 'ImageBase': 'class' type redefinition
+  c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\imagebase.h(6): note: see declaration of 'ImageBase'
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.h(10): error C2079: 'ConfMat::inputbase' uses undefined class 'ImageBase'
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.h(11): error C2079: 'ConfMat::outputbase' uses undefined class 'ImageBase'
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\source.cpp(21): error C3423: Use of incomplete type 'ImageBase'
+  c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\imagebase.h(6): note: see declaration of 'ImageBase'
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\source.cpp(21): error C2661: 'ConfMat::ConfMat': no overloaded function takes 2 arguments
+  ShowMatches.cpp
+  ImageBase.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\imagebase.cpp(12): warning C4244: '=': conversion from 'intptr_t' to 'long', possible loss of data
+  ConfMat.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.cpp(43): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...

@@ -1,5 +1,5 @@
 #include "stdafx.h"
-//#include "ImageBase.h"
+#include "ImageBase.h"
 
 using namespace std;
 using namespace cv;
@@ -9,17 +9,18 @@ class ConfMat {
 public:
 	ImageBase inputbase;
 	ImageBase outputbase;
-	vector <vector <unsigned int>> idinput;
-	vector <vector <unsigned int>> idoutput;
+	vector <unsigned int> idinput;
+	vector <unsigned int> idoutput;
 	vector <string> nominal;
 	vector<vector <vector <DMatch>>> distances;
-	Mat confuseMat;
-	ConfMat(ImageBase &inputbase, ImageBase &outputbase);
+	Mat confmatrix;
+	ConfMat(ImageBase &inputbase, ImageBase &outputbase, Ptr<Feature2D> detector, Ptr<Feature2D> descriptor);
 	void matchBases( Ptr<DescriptorMatcher> matcher, bool show);
 	void matchSelfBase(ImageBase &in, Ptr<DescriptorMatcher> matcher, bool show);
-	void setNames(const vector <string> &names, ImageBase &base, vector < vector<unsigned int>> &id);
-	void normMatchMatrix(double thres);
+	void computConf(const vector <unsigned int> &resalt);
+	
 	//void compConfMat();
-
+private:
+	void setNames(const vector <string> &names, ImageBase &base,  vector<unsigned int> &id);
 
 };

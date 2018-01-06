@@ -10,9 +10,11 @@ public:
 	double thres;
 	double minD;
 	double maxD;
+	MinDistRed();
 	void create(double thres);
-	void reduceVector(const vector <vector <vector <DMatch>>> &invector, vector <vector <vector <DMatch>>> &outvector);
-	void choseImag(const vector <vector <vector <DMatch>>> &invector, vector <unsigned int> &result)
-
-
+	void reduceVector(const vector <vector <vector <DMatch>>> &invector, vector <vector <vector <DMatch>>> &outvector, vector <unsigned int> &result);
+	
+private:
+	vector <vector <double>> mean;
+	vector <vector <double>> min;
 };
