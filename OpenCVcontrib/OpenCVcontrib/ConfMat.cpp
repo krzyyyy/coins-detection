@@ -19,7 +19,9 @@ void ConfMat::matchSelfBase(ImageBase &in, Ptr<DescriptorMatcher> matcher, bool 
 		}
 	}
 }
-ConfMat::ConfMat(ImageBase &inputbase, ImageBase &outputbase, Ptr<Feature2D> detector, Ptr<Feature2D> descriptor) {
+ConfMat::ConfMat(const string & name1, const string &ext1, const string & name2, const string &ext2, Ptr<Feature2D> detector, Ptr<Feature2D> descriptor)
+	:inputbase(name1, ext1), outputbase(name2, ext2)
+{
 	this->inputbase = inputbase;
 	this->outputbase = outputbase;
 	this->inputbase.computDesc(detector, descriptor);
@@ -46,9 +48,17 @@ void ConfMat::setNames(const vector <string> &names, ImageBase &base, vector<uns
 }
 void ConfMat::computConf(const vector <unsigned int> & resalt, double &fac , Mat &confmatrix) {
 	fac = 0;
-	for each (unsigned int i in resalt) {
+	for (int i = 0; i < resalt.size();i++) {
 		confmatrix.at<unsigned short>(idinput[i],idoutput[resalt[i]])++;
 		if (idinput[i] == idoutput[resalt[i]])fac++;
+	}
+	fac /= inputbase.images.size();
+}
+void ConfMat::computMeanConf(const vector <unsigned int> & resalt, double &fac, Mat &confmatrix) {
+	fac = 0;
+	for (int i = 0; i < resalt.size(); i++) {
+		confmatrix.at<unsigned short>(idinput[i], resalt[i])++;
+		if (idinput[i] == resalt[i])fac++;
 	}
 	fac /= inputbase.images.size();
 }

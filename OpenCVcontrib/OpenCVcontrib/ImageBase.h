@@ -5,6 +5,7 @@ using namespace cv;
 
 class ImageBase{
 public:
+	string naz[9]; 
 	vector <string> name;
 	vector <vector <KeyPoint>> keys;
 	vector < Mat> images;
@@ -12,7 +13,8 @@ public:
 	ImageBase();
 	ImageBase(const string path, const string fileExt);
 	void computDesc(Ptr<Feature2D> detector, Ptr<Feature2D> descriptor);
-	//bool isEmpty();
+	void view();
+	//void savePatterns(const vector <Mat> img, const vector < Vec3f[6][3]> coins, const string path, string ext);
 private:
 	bool empty;
 	

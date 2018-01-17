@@ -1,2 +1,6 @@
 ﻿  Source.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\source.cpp(17): warning C4101: 'meanfact': unreferenced local variable
+  ConfMat.cpp
+c:\users\asus\desktop\programy c++\opencvcontrib\opencvcontrib\confmat.cpp(44): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+  Generating Code...
   OpenCVcontrib.vcxproj -> C:\Users\ASUS\Desktop\Programy C++\OpenCVcontrib\x64\Debug\OpenCVcontrib.exe
