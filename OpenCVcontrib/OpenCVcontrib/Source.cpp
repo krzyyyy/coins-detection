@@ -51,17 +51,15 @@ int main() {
 		meanbestfactor = 0;
 		for (int i = 1; i < 31; i++) {
 			vector <vector <vector<DMatch>>> closed,redcomp,inputcomp;
-			MinDistRed ssss = MinDistRed(1.2 + (0.05*i));
+			MinDistRed ssss(1.4 + (0.05*i));
 			Mat conf = Mat(9, 9, CV_16UC1, Scalar(0));
-			ssss.reduceVector(por.distances, closed, przynal);
-			redcomp = ssss.composit(closed, por.idoutput);
-			inputcomp = ssss.composit(por.distances, por.idoutput);
+			ssss.reduceVector(por);
 			
-			por.computConf(przynal, fact, conf);
+			por.computConf( fact, conf);
 			if (fact > bestfactor) {
 				cout << "detector:  " << detectors[k] << endl;
 				cout << "Best matching:  " << fact << endl;
-				cout << "For factor:  " << 1.2 + (0.05*i) << endl;
+				cout << "For factor:  " << 1.4 + (0.05*i) << endl;
 				cout << "Matrix:   \n" << conf << endl;
 				bestfactor = fact;
 				conf.copyTo(www);

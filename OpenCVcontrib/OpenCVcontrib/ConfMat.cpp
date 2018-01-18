@@ -35,6 +35,7 @@ ConfMat::ConfMat(const string & name1, const string &ext1, const string & name2,
 	nominal = vector <string>(names, names + sizeof(names) / sizeof(string));
 	setNames(nominal, inputbase, idinput);
 	setNames(nominal, outputbase, idoutput);
+	result = vector <unsigned int >(inputbase.images.size());
 }
 void ConfMat::setNames(const vector <string> &names, ImageBase &base, vector<unsigned int> &id) {
 	for (int i = 0; i < base.name.size(); i++) {
@@ -46,11 +47,11 @@ void ConfMat::setNames(const vector <string> &names, ImageBase &base, vector<uns
 		}
 	}
 }
-void ConfMat::computConf(const vector <unsigned int> & resalt, double &fac , Mat &confmatrix) {
+void ConfMat::computConf( double &fac , Mat &confmatrix) {
 	fac = 0;
-	for (int i = 0; i < resalt.size();i++) {
-		confmatrix.at<unsigned short>(idinput[i],idoutput[resalt[i]])++;
-		if (idinput[i] == idoutput[resalt[i]])fac++;
+	for (int i = 0; i < result.size();i++) {
+		confmatrix.at<unsigned short>(idinput[i],idoutput[result[i]])++;
+		if (idinput[i] == idoutput[result[i]])fac++;
 	}
 	fac /= inputbase.images.size();
 }
